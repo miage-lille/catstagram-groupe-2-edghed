@@ -26,7 +26,7 @@ export const defaultState: State = {
 };
 const initialState: State = { 
   counter: 0, 
-  picturesStatus: { status: 'loading' }, // pas de 'data' ici
+  picturesStatus: { status: 'loading' }, 
   selectedPicture: null 
 };
 export const reducer = (state: State | undefined = defaultState, action: Actions): State | Loop<State> => {
@@ -50,12 +50,12 @@ export const reducer = (state: State | undefined = defaultState, action: Actions
     case 'FETCH_CATS_REQUEST':
       return { ...state, picturesStatus: { status: 'loading' } };
         case 'FETCH_CATS_COMMIT':
-          // On vérifie ici que l'action contient bien des données avant de les assigner
+          
           return { 
             ...state, 
             picturesStatus: { 
               status: 'success', 
-              data: action.payload.data || []  // S'assurer que `data` existe sinon assigner un tableau vide
+              data: action.payload.data || []  
             }
           };
         case 'FETCH_CATS_ROLLBACK':

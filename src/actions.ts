@@ -11,18 +11,11 @@ export const fetchCatsRequest = (counter: number): FetchCatsRequest => ({
 });
 
 // const fetchCatsCommit = (payload: { hits: any[] }): FetchCatsCommit => ({ type: 'FETCH_CATS_COMMIT', payload });
-export const fetchCatsCommit = (payload: { hits: any[] }): FetchCatsCommit => ({
+export const fetchCatsCommit = (pictures: Picture[]): FetchCatsCommit => ({
   type: 'FETCH_CATS_COMMIT',
-  payload: {
-    status: 'success',
-    data: payload.hits.map((hit: any) => ({
-      previewFormat: hit.previewURL,
-      webFormat: hit.webformatURL,
-      largeFormat: hit.largeImageURL,
-      author: hit.user,
-    })),
-  },
+  payload: { status: 'success', data: pictures } 
 });
+
 
 
 

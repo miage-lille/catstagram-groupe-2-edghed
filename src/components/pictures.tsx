@@ -1,59 +1,67 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { Picture } from '../reducer';
-import ModalPortal from './modal';
-import { selectPicture, closeModal } from '../actions';
-import { selectedPictureSelector } from '../reducer';
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { picturesSelector, selectedPictureSelector } from "../reducer";
+import { selectPicture, closeModal } from "../actions";
+import { Picture } from "../types/picture.type";
+import ModalPortal from "./modal"; 
 
-const Container = styled.div`
-  padding: 1rem;
-  justify-content: center;
-  display: flex;
-  flex-wrap: wrap;
-`;
 
-const Image = styled.img`
-  margin: 10px;
-  object-fit: contain;
-  transition: transform 1s;
-  max-width: fit-content;
-  &:hover {
-    transform: scale(1.2);
-  }
-`;
-
-interface PicturesProps {
-  pictures: Picture[];
+interface PicturesState {
+  status: 'loading' | 'failure' | 'success';
+  data: Picture[];
+  error: string;
 }
 
-const Pictures: React.FC<PicturesProps> = ({ pictures }) => {
+
+interface PicturesProps {
+  pictures: Picture[]; 
+}
+
+const PicturesComponent: React.FC<PicturesProps> = ({ pictures }) => {
   const dispatch = useDispatch();
-  const selectedPicture = useSelector(selectedPictureSelector);
+  const selectedPicture = useSelector(selectedPictureSelector) as Picture | null; 
+
+  
+  const picturesState = useSelector(picturesSelector) as PicturesState;
+
+  
+  if (picturesState.status === "loading") {
+    return <p>Chargement des images...</p>;
+  }
+
+  if (picturesState.status === "failure") {
+    return <p>Erreur : {picturesState.error}</p>;
+  }
 
   const handleImageClick = (picture: Picture) => {
-    dispatch(selectPicture(picture));
+    dispatch(selectPicture(picture)); 
   };
 
   const handleCloseModal = () => {
-    dispatch(closeModal());
+    dispatch(closeModal()); 
   };
 
   return (
-    <Container>
-      {pictures.map((picture, index) => (
-        <Image
-          key={index}
-          src={picture.previewFormat}
-          alt={`Picture ${index}`}
-          onClick={() => handleImageClick(picture)}
-        />
-      ))}
+    <div className="gallery">
+      {picturesState.status === "success" && pictures.length > 0 &&
+        pictures.map((picture: Picture, index: number) => (
+          <img
+            key={index}
+            src={picture.previewFormat}
+            alt={`Chat #${index + 1}`}
+            className="thumbnail"
+            onClick={() => handleImageClick(picture)} 
+          />
+        ))}
+
       {selectedPicture && (
-        <ModalPortal largeFormat={selectedPicture.largeFormat} close={handleCloseModal} />
+        <ModalPortal
+          largeFormat={selectedPicture.largeFormat} 
+          close={handleCloseModal} 
+        />
       )}
-    </Container>
+    </div>
   );
 };
 
-export default Pictures;
+export default PicturesComponent;

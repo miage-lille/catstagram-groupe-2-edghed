@@ -46,11 +46,11 @@ const Counter = () => {
       <Button onClick={() => dispatch(decrement())} disabled={counter <= 3}> - </Button>
       <DisplayCounter>{counter}</DisplayCounter>
       <Button onClick={() => dispatch(increment())}> + </Button>
-      {/* Vérifie si la donnée est en succès avant de la passer à Pictures */}
+      {}
       {pictures.status === 'success' && <Pictures pictures={pictures.data} />}
     </Container>
   );
 };
-export default Counter;  // Export par défaut
+export default Counter;  
 
 

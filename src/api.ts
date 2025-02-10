@@ -1,4 +1,5 @@
-// api.ts
+
+import { Picture } from './reducer';
 import { FetchCatsRequest, FetchCatsCommit, FetchCatsRollback } from './types/actions.type';
 
 export const loading = (): unknown => ({
@@ -19,4 +20,14 @@ export const failure = (error: string): unknown => ({
   status: 'failure',
   error,
 });
+export const parseApiResponse = (data: { hits: any[] }): Picture[] => {
+    return data.hits.map(hit => ({
+      previewFormat: hit.previewURL,
+      webFormat: hit.webformatURL, 
+      largeFormat: hit.largeImageURL,
+      author: hit.user,
+    }));
+  };
+  
+  
 
