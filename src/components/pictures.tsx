@@ -1,24 +1,67 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { picturesSelector, selectedPictureSelector } from "../reducer";
+import { selectPicture, closeModal } from "../actions";
+import { Picture } from "../types/picture.type";
+import ModalPortal from "./modal"; 
 
-const Container = styled.div`
-  padding: 1rem;
-  justify-content: center;
-  display: flex;
-  flex-wrap: wrap;
-`;
 
-const Image = styled.img`
-  margin: 10px;
-  object-fit: contain;
-  transition: transform 1s;
-  max-width: fit-content;
-  &:hover {
-    transform: scale(1.2);
+interface PicturesState {
+  status: 'loading' | 'failure' | 'success';
+  data: Picture[];
+  error: string;
+}
+
+
+interface PicturesProps {
+  pictures: Picture[]; 
+}
+
+const PicturesComponent: React.FC<PicturesProps> = ({ pictures }) => {
+  const dispatch = useDispatch();
+  const selectedPicture = useSelector(selectedPictureSelector) as Picture | null; 
+
+  
+  const picturesState = useSelector(picturesSelector) as PicturesState;
+
+  
+  if (picturesState.status === "loading") {
+    return <p>Chargement des images...</p>;
   }
-`;
-const Pictures = () => {
-  return null;
+
+  if (picturesState.status === "failure") {
+    return <p>Erreur : {picturesState.error}</p>;
+  }
+
+  const handleImageClick = (picture: Picture) => {
+    dispatch(selectPicture(picture)); 
+  };
+
+  const handleCloseModal = () => {
+    dispatch(closeModal()); 
+  };
+
+  return (
+    <div className="gallery">
+      {picturesState.status === "success" && pictures.length > 0 &&
+        pictures.map((picture: Picture, index: number) => (
+          <img
+            key={index}
+            src={picture.previewFormat}
+            alt={`Chat #${index + 1}`}
+            className="thumbnail"
+            onClick={() => handleImageClick(picture)} 
+          />
+        ))}
+
+      {selectedPicture && (
+        <ModalPortal
+          largeFormat={selectedPicture.largeFormat} 
+          close={handleCloseModal} 
+        />
+      )}
+    </div>
+  );
 };
 
-export default Pictures;
+export default PicturesComponent;

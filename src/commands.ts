@@ -1,21 +1,27 @@
 import { Cmd } from 'redux-loop';
 import { fetchCatsCommit, fetchCatsRollback } from './actions';
 import { FetchCatsRequest } from './types/actions.type';
+import { parseApiResponse } from './api';
 
+const checkStatus = (response: Response) => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return response;
+};
 export const cmdFetch = (action: FetchCatsRequest) =>
   Cmd.run(
-    () => {
-      return fetch(action.path, {
-        method: action.method,
-      }).then(checkStatus);
-    },
+    () =>
+      fetch(action.path, { method: action.method })
+        .then(checkStatus)
+        .then(response => response.json())
+        .then(parseApiResponse), 
     {
-      successActionCreator: fetchCatsCommit, // (equals to (payload) => fetchCatsCommit(payload))
-      failActionCreator: fetchCatsRollback, // (equals to (error) => fetchCatsCommit(error))
+      successActionCreator: fetchCatsCommit, 
+      failActionCreator: fetchCatsRollback,
     },
   );
 
-const checkStatus = (response: Response) => {
-  if (response.ok) return response;
-  throw new Error(response.statusText);
-};
+
+
+
